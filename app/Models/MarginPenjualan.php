@@ -8,7 +8,7 @@ class MarginPenjualan extends Model
 {
     protected $table = 'margin_penjualan';
     protected $primaryKey = 'idmargin_penjualan';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'persen',

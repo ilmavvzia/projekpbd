@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Barang;
 use App\Models\Satuan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BarangController extends Controller
 {
     public function index()
     {
-        $barang = Barang::with('satuan')->get();
+        $barang = DB::select('CALL sp_tampil_barang_aktif()');
 
         return view('barang.index', compact('barang'));
     }

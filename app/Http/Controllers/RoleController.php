@@ -4,15 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RoleController extends Controller
 {
     public function index()
-    {
-        $roles = Role::all();
+{
+    $roles = DB::select('CALL sp_tampil_role()');
 
-        return view('role.index', compact('roles'));
-    }
+    return view('role.index', compact('roles'));
+}
 
     public function create()
     {

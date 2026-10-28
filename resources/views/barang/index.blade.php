@@ -34,7 +34,7 @@
                     <td>{{ $item->idbarang }}</td>
                     <td>{{ $item->jenis }}</td>
                     <td>{{ $item->nama }}</td>
-                    <td>{{ $item->satuan->nama_satuan ?? '-' }}</td>
+                    <td>{{ $item->nama_satuan ?? '-' }}</td>
                     <td>{{ $item->status == 1 ? 'Aktif' : 'Tidak Aktif' }}</td>
                     <td>Rp{{ number_format($item->harga ?? 0, 0, ',', '.') }}</td>
                     <td>

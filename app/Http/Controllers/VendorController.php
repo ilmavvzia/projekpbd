@@ -4,15 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Vendor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class VendorController extends Controller
 {
     public function index()
-    {
-        $vendors = Vendor::all();
+{
+    $vendors = DB::select('CALL sp_tampil_vendor()');
 
-        return view('vendor.index', compact('vendors'));
-    }
+    return view('vendor.index', compact('vendors'));
+}
 
     public function create()
     {
@@ -23,7 +24,7 @@ class VendorController extends Controller
     {
         $request->validate([
             'nama_vendor' => 'required|string|max:100',
-            'badan_hukum' => 'required|in:P,C',
+            'badan_hukum' => 'required|in:Y,T',
             'status' => 'required|in:A,N',
         ]);
 
@@ -48,7 +49,7 @@ class VendorController extends Controller
     {
         $request->validate([
             'nama_vendor' => 'required|string|max:100',
-            'badan_hukum' => 'required|in:P,C',
+            'badan_hukum' => 'required|in:Y,T',
             'status' => 'required|in:A,N',
         ]);
 

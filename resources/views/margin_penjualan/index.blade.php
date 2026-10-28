@@ -1,7 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Margin Penjualan</title>
 </head>
 <body>
@@ -27,32 +29,45 @@
                 <th>Aksi</th>
             </tr>
         </thead>
+
         <tbody>
             @forelse ($margins as $margin)
                 <tr>
                     <td>{{ $margin->idmargin_penjualan }}</td>
                     <td>{{ $margin->persen }}%</td>
-                    <td>{{ $margin->status }}</td>
-                    <td>{{ $margin->iduser }}</td>
-                    <td>{{ $margin->user?->username ?? '-' }}</td>
+                    <td>
+                        {{ $margin->status_deskripsi == 1 ? 'Aktif' : 'Tidak Aktif' }}
+                    </td>
+                    <td>{{ $margin->iduser ?? '-' }}</td>
+                    <td>{{ $margin->username ?? '-' }}</td>
                     <td>{{ $margin->created_at }}</td>
                     <td>{{ $margin->updated_at }}</td>
                     <td>
-                        <a href="{{ route('margin_penjualan.edit', $margin->idmargin_penjualan) }}">Edit</a>
+                        <a href="{{ route('margin_penjualan.edit', $margin->idmargin_penjualan) }}">
+                            Edit
+                        </a>
 
-                        <form action="{{ route('margin_penjualan.destroy', $margin->idmargin_penjualan) }}"
-                              method="POST" style="display:inline">
+                        <form
+                            action="{{ route('margin_penjualan.destroy', $margin->idmargin_penjualan) }}"
+                            method="POST"
+                            style="display:inline"
+                        >
                             @csrf
                             @method('DELETE')
-                            <button type="submit"
-                                onclick="return confirm('Yakin ingin menghapus margin ini?')">
+
+                            <button
+                                type="submit"
+                                onclick="return confirm('Yakin ingin menghapus margin ini?')"
+                            >
                                 Hapus
                             </button>
                         </form>
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="8">Belum ada data margin.</td></tr>
+                <tr>
+                    <td colspan="8">Belum ada data margin.</td>
+                </tr>
             @endforelse
         </tbody>
     </table>

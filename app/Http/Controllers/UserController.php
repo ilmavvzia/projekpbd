@@ -6,15 +6,16 @@ use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
     public function index()
-    {
-        $users = User::with('role')->get();
+{
+    $users = DB::select('CALL sp_tampil_user()');
 
-        return view('user.index', compact('users'));
-    }
+    return view('user.index', compact('users'));
+}
 
     public function create()
     {

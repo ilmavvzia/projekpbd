@@ -22,8 +22,8 @@
         <p>
             <label>Badan Hukum</label><br>
             <select name="badan_hukum" required>
-                <option value="P" @selected(old('badan_hukum', $vendor->badan_hukum) == 'P')>P</option>
-                <option value="C" @selected(old('badan_hukum', $vendor->badan_hukum) == 'C')>C</option>
+                <option value="Y" @selected(old('badan_hukum', $vendor->badan_hukum) == 'Y')>P</option>
+                <option value="T" @selected(old('badan_hukum', $vendor->badan_hukum) == 'T')>C</option>
             </select>
             @error('badan_hukum') <span>{{ $message }}</span> @enderror
         </p>

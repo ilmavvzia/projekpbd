@@ -4,15 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Satuan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SatuanController extends Controller
 {
     public function index()
-    {
-        $satuan = Satuan::all();
+{
+    $satuan = DB::select('CALL sp_tampil_satuan()');
 
-        return view('satuan.index', compact('satuan'));
-    }
+    return view('satuan.index', compact('satuan'));
+}
 
     public function create()
     {
