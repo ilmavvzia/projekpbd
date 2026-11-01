@@ -131,6 +131,8 @@ footer{margin-top:36px; color:var(--muted); font-size:13px; text-align:center}
     <a href="{{ route('role.index') }}" {!! $aktif('role*') !!}>Role</a>
     <a href="{{ route('user.index') }}" {!! $aktif('user*') !!}>User</a>
     <a href="{{ route('vendor.index') }}" {!! $aktif('vendor*') !!}>Vendor</a>
+    <a href="{{ route('pengadaan.index') }}" {!! $aktif('pengadaan*') !!}>Pengadaan</a>
+    <a href="{{ route('penerimaan.index') }}" {!! $aktif('penerimaan*') !!}>Penerimaan</a>
     <a href="{{ route('margin_penjualan.index') }}" {!! $aktif('margin*') !!}>Margin Penjualan</a>
   </nav>
 </aside>

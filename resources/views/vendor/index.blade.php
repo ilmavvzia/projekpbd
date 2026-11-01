@@ -1,76 +1,91 @@
-```php
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Data Vendor</title>
-</head>
-<body>
-    <h1>Data Vendor</h1>
 
-    <a href="{{ route('vendor.create') }}">+ Tambah Vendor</a>
-    |
-    <a href="{{ url('/') }}">Kembali ke Dashboard</a>
+@extends('layouts.app')
+
+@section('title', 'Data Vendor - Toko Kita')
+
+@section('content')
+
+    <h1>Data Vendor</h1>
+    <p class="sub">Kelola data pemasok atau vendor toko.</p>
 
     @if (session('success'))
-        <p>{{ session('success') }}</p>
+        <div class="panel">
+            {{ session('success') }}
+        </div>
     @endif
 
     @if (session('error'))
-        <p>{{ session('error') }}</p>
+        <div class="panel">
+            {{ session('error') }}
+        </div>
     @endif
 
-    <br><br>
+    <div class="panel">
+        <a href="{{ route('vendor.create') }}" class="btn">
+            + Tambah Vendor
+        </a>
 
-    <table border="1" cellpadding="10" cellspacing="0">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nama Vendor</th>
-                <th>Badan Hukum</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
+        <a href="{{ url('/') }}" class="btn-secondary">
+            Kembali ke Dashboard
+        </a>
+    </div>
 
-        <tbody>
-            @forelse ($vendors as $vendor)
+    <div class="table-wrap">
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ $vendor->idvendor }}</td>
-                    <td>{{ $vendor->nama_vendor }}</td>
-                    <td>{{ $vendor->badan_hukum }}</td>
-                    <td>
-                        {{ $vendor->status == 1 ? 'Aktif' : 'Tidak Aktif' }}
-                    </td>
-                    <td>
-                        <a href="{{ route('vendor.edit', $vendor->idvendor) }}">
-                            Edit
-                        </a>
+                    <th>ID</th>
+                    <th>Nama Vendor</th>
+                    <th>Badan Hukum</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
 
-                        <form
-                            action="{{ route('vendor.destroy', $vendor->idvendor) }}"
-                            method="POST"
-                            style="display: inline;"
-                        >
-                            @csrf
-                            @method('DELETE')
+            <tbody>
+                @forelse ($vendors as $vendor)
+                    <tr>
+                        <td>{{ $vendor->idvendor }}</td>
+                        <td>{{ $vendor->nama_vendor }}</td>
+                        <td>
+                            {{ $vendor->badan_hukum == 'Y' ? 'Ya' : 'Tidak' }}
+                        </td>
+                        <td>
+                            {{ $vendor->status == 'A' ? 'Aktif' : 'Nonaktif' }}
+                        </td>
+                        <td>
+                            <a href="{{ route('vendor.edit', $vendor->idvendor) }}"
+                               class="btn-secondary">
+                                Edit
+                            </a>
 
-                            <button
-                                type="submit"
-                                onclick="return confirm('Yakin ingin menghapus vendor ini?')"
+                            <form
+                                action="{{ route('vendor.destroy', $vendor->idvendor) }}"
+                                method="POST"
+                                style="display:inline"
                             >
-                                Hapus
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="5">Belum ada data vendor.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-</body>
-</html>
-```
+                                @csrf
+                                @method('DELETE')
+
+                                <button
+                                    type="submit"
+                                    class="btn-secondary"
+                                    onclick="return confirm('Yakin ingin menghapus vendor ini?')"
+                                >
+                                    Hapus
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="empty">
+                            Belum ada data vendor.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+@endsection

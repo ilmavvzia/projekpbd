@@ -1,47 +1,72 @@
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit User</title>
-</head>
-<body>
-    <h1>Edit User</h1>
+@extends('layouts.app')
 
-    <form action="{{ route('user.update', $user->iduser) }}"
-          method="POST">
+@section('title', 'Edit User')
+
+@section('content')
+<div class="panel">
+    <h2>Edit User</h2>
+    <p>Ubah informasi akun dan role pengguna.</p>
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form action="{{ route('user.update', $user->iduser) }}" method="POST">
         @csrf
         @method('PUT')
 
-        <p>
-            <label>Username</label><br>
-            <input type="text" name="username"
-                   value="{{ old('username', $user->username) }}" required>
-            @error('username') <span>{{ $message }}</span> @enderror
-        </p>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                value="{{ old('username', $user->username) }}"
+                required
+            >
+        </div>
 
-        <p>
-            <label>Password Baru (kosongkan jika tidak diubah)</label><br>
-            <input type="password" name="password">
-            @error('password') <span>{{ $message }}</span> @enderror
-        </p>
+        <div class="form-group">
+            <label for="password">Password Baru</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Kosongkan jika tidak ingin mengubah password"
+            >
+            <small>Kosongkan kolom ini jika password tidak ingin diubah.</small>
+        </div>
 
-        <p>
-            <label>Role</label><br>
-            <select name="idrole" required>
+        <div class="form-group">
+            <label for="idrole">Role</label>
+            <select id="idrole" name="idrole" required>
                 @foreach ($roles as $role)
-                    <option value="{{ $role->idrole }}"
-                        @selected(old('idrole', $user->idrole) == $role->idrole)>
+                    <option
+                        value="{{ $role->idrole }}"
+                        {{ old('idrole', $user->idrole) == $role->idrole ? 'selected' : '' }}
+                    >
                         {{ $role->nama_role }}
                     </option>
                 @endforeach
             </select>
-            @error('idrole') <span>{{ $message }}</span> @enderror
-        </p>
+        </div>
 
-        <button type="submit">Simpan Perubahan</button>
+        <button type="submit" class="btn">Simpan Perubahan</button>
+
+        <a href="{{ route('user.index') }}" class="btn btn-secondary">
+            Batal
+        </a>
+
+        <a href="{{ url('/') }}" class="btn btn-secondary">
+            Kembali ke Dashboard
+        </a>
     </form>
-
-    <a href="{{ route('user.index') }}">Kembali</a>
-</body>
-</html>
+</div>
+@endsection

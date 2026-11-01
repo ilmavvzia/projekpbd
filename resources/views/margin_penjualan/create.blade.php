@@ -1,48 +1,78 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Tambah Margin</title>
-</head>
-<body>
-    <h1>Tambah Margin Penjualan</h1>
+
+@extends('layouts.app')
+
+@section('title', 'Tambah Margin Penjualan')
+
+@section('content')
+<div class="panel">
+    <h2>Tambah Margin Penjualan</h2>
+    <p>Masukkan persentase margin, status, dan user yang mengelola margin.</p>
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <form action="{{ route('margin_penjualan.store') }}" method="POST">
         @csrf
 
-        <p>
-            <label>Persentase Margin (%)</label><br>
-            <input type="number" name="persen" min="0" max="100"
-                   step="0.01" value="{{ old('persen') }}" required>
-            @error('persen') <span>{{ $message }}</span> @enderror
-        </p>
+        <div class="form-group">
+            <label for="persen">Persentase Margin (%)</label>
+            <input
+                type="number"
+                id="persen"
+                name="persen"
+                min="0"
+                max="100"
+                step="0.01"
+                value="{{ old('persen') }}"
+                placeholder="Contoh: 10 atau 15.5"
+                required
+            >
+        </div>
 
-        <p>
-            <label>Status</label><br>
-            <select name="status" required>
-                <option value="1" @selected(old('status') == '1')>Aktif (1)</option>
-                <option value="0" @selected(old('status') == '0')>Tidak Aktif (0)</option>
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" name="status" required>
+                <option value="1" {{ old('status', '1') == '1' ? 'selected' : '' }}>
+                    Aktif
+                </option>
+                <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>
+                    Tidak Aktif
+                </option>
             </select>
-            @error('status') <span>{{ $message }}</span> @enderror
-        </p>
+        </div>
 
-        <p>
-            <label>User</label><br>
-            <select name="iduser" required>
+        <div class="form-group">
+            <label for="iduser">User</label>
+            <select id="iduser" name="iduser" required>
                 <option value="">-- Pilih User --</option>
+
                 @foreach ($users as $user)
-                    <option value="{{ $user->iduser }}"
-                        @selected(old('iduser') == $user->iduser)>
+                    <option
+                        value="{{ $user->iduser }}"
+                        {{ old('iduser') == $user->iduser ? 'selected' : '' }}
+                    >
                         {{ $user->username }}
                     </option>
                 @endforeach
             </select>
-            @error('iduser') <span>{{ $message }}</span> @enderror
-        </p>
+        </div>
 
-        <button type="submit">Simpan</button>
+        <button type="submit" class="btn">Simpan Margin</button>
+
+        <a href="{{ route('margin_penjualan.index') }}" class="btn btn-secondary">
+            Batal
+        </a>
+
+        <a href="{{ url('/') }}" class="btn btn-secondary">
+            Kembali ke Dashboard
+        </a>
     </form>
-
-    <a href="{{ route('margin_penjualan.index') }}">Kembali</a>
-</body>
-</html>
+</div>
+@endsection

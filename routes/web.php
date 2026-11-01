@@ -9,8 +9,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\MarginPenjualanController;
 use App\Http\Controllers\PengadaanController;
+use App\Http\Controllers\PenerimaanController;
 
-
+// Dashboard Utama
 Route::get('/', function () {
     $barang = DB::table('v_brg')->get();
     $satuan = DB::table('v_satuan')->get();
@@ -29,13 +30,15 @@ Route::get('/', function () {
     ));
 });
 
-
+// Master Data Resources
 Route::resource('barang', BarangController::class);
 Route::resource('satuan', SatuanController::class);
 Route::resource('role', RoleController::class);
 Route::resource('user', UserController::class);
 Route::resource('vendor', VendorController::class);
 Route::resource('margin_penjualan', MarginPenjualanController::class);
+
+// Testing SQL Function Database
 Route::get('/tes-function', function () {
     $subtotal = DB::select(
         'SELECT fn_hitung_subtotal(?, ?) AS hasil',
@@ -59,8 +62,17 @@ Route::get('/tes-function', function () {
     ]);
 });
 
-Route::get('/pengadaan', [PengadaanController::class, 'index'])
-    ->name('pengadaan.index');
+// Transaksi Pengadaan (Otomatis mencakup index, create, store, show, edit, update, destroy)
+Route::resource('pengadaan', PengadaanController::class);
 
-Route::post('/pengadaan/hitung', [PengadaanController::class, 'hitung'])
-    ->name('pengadaan.hitung');
+// Route hitung tambahan
+Route::post('/pengadaan/hitung', [PengadaanController::class, 'hitung'])->name('pengadaan.hitung');
+// Penerimaan
+Route::get('/penerimaan', [PenerimaanController::class, 'index'])
+    ->name('penerimaan.index');
+
+Route::get('/penerimaan/create', [PenerimaanController::class, 'create'])
+    ->name('penerimaan.create');
+
+Route::post('/penerimaan', [PenerimaanController::class, 'store'])
+    ->name('penerimaan.store');

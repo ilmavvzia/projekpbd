@@ -1,51 +1,83 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Tambah Vendor</title>
-</head>
-<body>
+
+@extends('layouts.app')
+
+@section('title', 'Tambah Vendor - Toko Kita')
+
+@section('content')
+
     <h1>Tambah Vendor</h1>
+    <p class="sub">Masukkan informasi vendor atau pemasok baru.</p>
 
-    <form action="{{ route('vendor.store') }}" method="POST">
-        @csrf
+    @if ($errors->any())
+        <div class="panel">
+            <strong>Periksa kembali data yang dimasukkan:</strong>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-        <p>
-            <label>Nama Vendor</label><br>
-            <input type="text" name="nama_vendor"
-                   value="{{ old('nama_vendor') }}" required>
-            @error('nama_vendor')
-                <span>{{ $message }}</span>
-            @enderror
-        </p>
+    <div class="panel">
+        <form action="{{ route('vendor.store') }}" method="POST">
+            @csrf
 
-        <p>
-            <label>Badan Hukum</label><br>
-            <select name="badan_hukum" required>
-                <option value="">-- Pilih --</option>
-                <option value="Y" @selected(old('badan_hukum') == 'Y')>Y - Ya</option>
-                <option value="T" @selected(old('badan_hukum') == 'T')>T - Tidak</option>
-            </select>
-            @error('badan_hukum')
-                <span>{{ $message }}</span>
-            @enderror
-        </p>
+            <div class="form-group">
+                <label for="nama_vendor">Nama Vendor</label>
+                <input
+                    type="text"
+                    id="nama_vendor"
+                    name="nama_vendor"
+                    value="{{ old('nama_vendor') }}"
+                    placeholder="Masukkan nama vendor"
+                    required
+                >
+                @error('nama_vendor')
+                    <p>{{ $message }}</p>
+                @enderror
+            </div>
 
-        <p>
-            <label>Status</label><br>
-            <select name="status" required>
-                <option value="">-- Pilih --</option>
-                <option value="A" @selected(old('status') == 'A')>A - Aktif</option>
-                <option value="N" @selected(old('status') == 'N')>N - Nonaktif</option>
-            </select>
-            @error('status')
-                <span>{{ $message }}</span>
-            @enderror
-        </p>
+            <div class="form-group">
+                <label for="badan_hukum">Badan Hukum</label>
+                <select id="badan_hukum" name="badan_hukum" required>
+                    <option value="">-- Pilih Badan Hukum --</option>
+                    <option value="Y" {{ old('badan_hukum') == 'Y' ? 'selected' : '' }}>
+                        Y - Ya
+                    </option>
+                    <option value="T" {{ old('badan_hukum') == 'T' ? 'selected' : '' }}>
+                        T - Tidak
+                    </option>
+                </select>
+                @error('badan_hukum')
+                    <p>{{ $message }}</p>
+                @enderror
+            </div>
 
-        <button type="submit">Simpan</button>
-    </form>
+            <div class="form-group">
+                <label for="status">Status Vendor</label>
+                <select id="status" name="status" required>
+                    <option value="">-- Pilih Status --</option>
+                    <option value="A" {{ old('status') == 'A' ? 'selected' : '' }}>
+                        A - Aktif
+                    </option>
+                    <option value="N" {{ old('status') == 'N' ? 'selected' : '' }}>
+                        N - Nonaktif
+                    </option>
+                </select>
+                @error('status')
+                    <p>{{ $message }}</p>
+                @enderror
+            </div>
 
-    <a href="{{ route('vendor.index') }}">Kembali</a>
-</body>
-</html>
+            <button type="submit" class="btn">
+                Simpan Vendor
+            </button>
+
+            <a href="{{ url('/') }}" class="btn-secondary">
+                Kembali ke Dashboard
+            </a>
+        </form>
+    </div>
+
+@endsection
