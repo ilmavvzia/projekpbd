@@ -10,6 +10,8 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\MarginPenjualanController;
 use App\Http\Controllers\PengadaanController;
 use App\Http\Controllers\PenerimaanController;
+use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\ReturController;
 
 // Dashboard Utama
 Route::get('/', function () {
@@ -19,6 +21,7 @@ Route::get('/', function () {
     $user = DB::table('v_user')->get();
     $vendor = DB::table('v_vendor')->get();
     $margin = DB::table('v_mrg_penjualan')->get();
+    $penjualan = DB::select('CALL sp_tampil_penjualan()');
 
     return view('dashboard', compact(
         'barang',
@@ -26,7 +29,8 @@ Route::get('/', function () {
         'role',
         'user',
         'vendor',
-        'margin'
+        'margin',
+        'penjualan'
     ));
 });
 
@@ -76,3 +80,8 @@ Route::get('/penerimaan/create', [PenerimaanController::class, 'create'])
 
 Route::post('/penerimaan', [PenerimaanController::class, 'store'])
     ->name('penerimaan.store');
+
+// Transaksi Penjualan
+Route::resource('penjualan', PenjualanController::class);
+
+Route::resource('retur', ReturController::class);

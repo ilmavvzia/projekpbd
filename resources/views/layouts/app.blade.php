@@ -193,6 +193,13 @@
             <a href="{{ route('penerimaan.index') }}"
                class="{{ request()->is('penerimaan*') ? 'active' : '' }}">
                 Penerimaan
+            <a href="{{ route('penjualan.index') }}"
+   class="{{ request()->is('penjualan*') ? 'active' : '' }}">
+    Penjualan
+</a>
+            <a href="{{ route('retur.index') }}">
+    Retur
+</a>
             </a>
             <a href="{{ route('margin_penjualan.index') }}">Margin Penjualan</a>
         </nav>

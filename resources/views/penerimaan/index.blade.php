@@ -40,10 +40,17 @@
                         <td>{{ $p->status }}</td>
                         <td>{{ $p->iduser }}</td>
                         <td>
-                            @foreach ($p->details as $detail)
+                            @forelse ($p->details as $detail)
                                 ID Barang: {{ $detail->barang_idbarang }}<br>
-                                Jumlah: {{ $detail->jumlah_terima }}
-                            @endforeach
+                                Jumlah: {{ $detail->jumlah_terima }}<br>
+                                Harga Satuan:
+                                Rp {{ number_format($detail->harga_satuan_terima, 0, ',', '.') }}<br>
+                                Subtotal:
+                                Rp {{ number_format($detail->sub_total_terima, 0, ',', '.') }}
+                                <br><br>
+                            @empty
+                                Belum ada detail barang.
+                            @endforelse
                         </td>
                     </tr>
                 @empty

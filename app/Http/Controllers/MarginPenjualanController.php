@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\DB;
 
 class MarginPenjualanController extends Controller
 {
-    // Menampilkan data margin penjualan menggunakan Stored Procedure
+    // Menampilkan data margin penjualan menggunakan SP
     public function index()
-    {
-        $margins = DB::select('CALL sp_tampil_margin_penjualan()');
+    { //Menampilkan persentase margin, status, username, serta informasi waktu pembuatan dan perubahan.
+        $margins = DB::select('CALL sp_tampil_margin_penjualan()'); //gabungkan tabel margin dan user
 
         return view('margin_penjualan.index', compact('margins'));
     }

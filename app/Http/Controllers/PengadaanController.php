@@ -72,14 +72,14 @@ class PengadaanController extends Controller
 
             // 2. Simpan Header Pengadaan
             $pengadaan = Pengadaan::create([
-                'timestamp'       => now(),
-                'user_iduser'     => Auth::id() ?? 1, // Default ke 1 jika sistem autentikasi belum aktif
-                'status'          => 'A', // 'A' = Diajukan / Aktif (sesuai tipe CHAR(1))
-                'vendor_idvendor' => $request->vendor_idvendor,
-                'subtotal_nilai'  => $subtotalNilai,
-                'ppn'             => $ppn,
-                'total_nilai'     => $totalNilai,
-            ]);
+    'timestamp'       => now(),
+    'iduser'          => Auth::id() ?? 1,
+    'status'          => 'A',
+    'vendor_idvendor' => $request->vendor_idvendor,
+    'subtotal_nilai'  => $subtotalNilai,
+    'ppn'             => $ppn,
+    'total_nilai'     => $totalNilai,
+]);
 
             // 3. Simpan Detail Pengadaan per item
             foreach ($request->items as $item) {

@@ -5,85 +5,96 @@
 
 @section('content')
 <div class="panel">
-    <h2>Pengadaan Barang</h2>
-    <p>Hitung subtotal dan total biaya pengadaan barang berdasarkan harga, jumlah, dan nominal PPN.</p>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h2>Pengadaan Barang</h2>
+            <p>Daftar transaksi pengadaan barang dari vendor.</p>
+        </div>
 
-    @if ($errors->any())
-        <div class="empty">
-            <strong>Terjadi kesalahan:</strong>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+        <a href="{{ route('pengadaan.create') }}" class="btn">
+            + Tambah Pengadaan
+        </a>
+    </div>
+
+    @if(session('success'))
+        <div class="empty" style="margin-bottom: 15px;">
+            {{ session('success') }}
         </div>
     @endif
 
-    <form action="{{ route('pengadaan.hitung') }}" method="POST">
-        @csrf
-
-        <div class="form-group">
-            <label for="harga">Harga Satuan (Rp)</label>
-            <input
-                type="number"
-                id="harga"
-                name="harga"
-                min="0"
-                value="{{ old('harga', $harga ?? '') }}"
-                placeholder="Masukkan harga satuan"
-                required
-            >
+    @if(session('error'))
+        <div class="empty" style="margin-bottom: 15px;">
+            {{ session('error') }}
         </div>
+    @endif
 
-        <div class="form-group">
-            <label for="jumlah">Jumlah Barang</label>
-            <input
-                type="number"
-                id="jumlah"
-                name="jumlah"
-                min="1"
-                value="{{ old('jumlah', $jumlah ?? '') }}"
-                placeholder="Masukkan jumlah barang"
-                required
-            >
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>ID Pengadaan</th>
+                    <th>Tanggal</th>
+                    <th>Vendor</th>
+                    <th>Subtotal</th>
+                    <th>PPN</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @forelse($pengadaans as $index => $pengadaan)
+                    <tr>
+                        <td>{{ $pengadaans->firstItem() + $index }}</td>
+                        <td>#{{ $pengadaan->idpengadaan }}</td>
+                        <td>
+                            {{ \Carbon\Carbon::parse($pengadaan->timestamp)->format('d-m-Y H:i') }}
+                        </td>
+                        <td>{{ $pengadaan->vendor->nama_vendor ?? '-' }}</td>
+                        <td>
+                            Rp {{ number_format($pengadaan->subtotal_nilai, 0, ',', '.') }}
+                        </td>
+                        <td>
+                            Rp {{ number_format($pengadaan->ppn, 0, ',', '.') }}
+                        </td>
+                        <td>
+                            <strong>
+                                Rp {{ number_format($pengadaan->total_nilai, 0, ',', '.') }}
+                            </strong>
+                        </td>
+                        <td>
+                            @if($pengadaan->status == 'A')
+                                <span>Aktif / Diajukan</span>
+                            @elseif($pengadaan->status == 'S')
+                                <span>Selesai Diterima</span>
+                            @else
+                                <span>{{ $pengadaan->status }}</span>
+                            @endif
+                        </td>
+                        <td>
+                            <a href="{{ route('pengadaan.show', $pengadaan->idpengadaan) }}"
+                               class="btn btn-secondary">
+                                Detail
+                            </a>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="9" class="empty">
+                            Belum ada transaksi pengadaan.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    @if($pengadaans->hasPages())
+        <div style="margin-top: 20px;">
+            {{ $pengadaans->links() }}
         </div>
-
-        <div class="form-group">
-            <label for="ppn">Nominal PPN (Rp)</label>
-            <input
-                type="number"
-                id="ppn"
-                name="ppn"
-                min="0"
-                value="{{ old('ppn', $ppn ?? 0) }}"
-                placeholder="Masukkan nominal PPN"
-                required
-            >
-        </div>
-
-        <button type="submit" class="btn">Hitung Total</button>
-        <a href="{{ url('/') }}" class="btn btn-secondary">Kembali ke Dashboard</a>
-    </form>
-
-    @isset($subtotal)
-        <div class="divider"></div>
-
-        <h3>Hasil Perhitungan</h3>
-
-        <div class="form-group">
-            <label>Subtotal</label>
-            <p>Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
-        </div>
-
-        <div class="form-group">
-            <label>PPN</label>
-            <p>Rp{{ number_format($ppn, 0, ',', '.') }}</p>
-        </div>
-
-        <div class="form-group">
-            <label>Total Pengadaan</label>
-            <h2>Rp{{ number_format($total, 0, ',', '.') }}</h2>
-        </div>
-    @endisset
+    @endif
 </div>
 @endsection

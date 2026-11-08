@@ -11,7 +11,7 @@ class BarangController extends Controller
 {
     public function index()
     {
-        $barang = DB::select('CALL sp_tampil_barang_aktif()');
+        $barang = DB::select('CALL sp_tampil_barang_aktif()'); //menampilkan barang yang masih aktif beserta informasi satuannya
 
         return view('barang.index', compact('barang'));
     }

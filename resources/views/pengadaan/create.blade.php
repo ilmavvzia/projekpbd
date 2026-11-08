@@ -1,22 +1,30 @@
-@extends('layouts.app') {{-- Ganti dengan layout template Anda, misal: adminlte, master, dll --}}
+
+@extends('layouts.app')
+
+@section('title', 'Tambah Pengadaan')
 
 @section('content')
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="mb-0">Buat Transaksi Pengadaan Baru</h4>
-        <a href="{{ route('pengadaan.index') }}" class="btn btn-outline-secondary btn-sm">Kembali ke Daftar</a>
+<div class="panel">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div>
+            <h2>Tambah Pengadaan Barang</h2>
+            <p>Catat pembelian barang dari vendor.</p>
+        </div>
+
+        <a href="{{ route('pengadaan.index') }}" class="btn btn-secondary">
+            Kembali
+        </a>
     </div>
 
     @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-        </div>
+        <div class="empty">{{ session('error') }}</div>
     @endif
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
+    @if($errors->any())
+        <div class="empty" style="margin-bottom:15px;">
+            <strong>Periksa kembali data berikut:</strong>
+            <ul>
+                @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
             </ul>
@@ -26,207 +34,229 @@
     <form action="{{ route('pengadaan.store') }}" method="POST" id="form-pengadaan">
         @csrf
 
-        <div class="row">
-            <!-- Informasi Header Pengadaan -->
-            <div class="col-md-4">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white font-weight-bold">Informasi Vendor</div>
-                    <div class="card-body">
-                        <div class="form-group mb-3">
-                            <label class="form-label" for="vendor_idvendor">Pilih Vendor <span class="text-danger">*</span></label>
-                            <select name="vendor_idvendor" id="vendor_idvendor" class="form-select @error('vendor_idvendor') is-invalid @enderror" required>
-                                <option value="">-- Pilih Vendor --</option>
-                                @foreach($vendors as $vendor)
-                                    <option value="{{ $vendor->idvendor }}" {{ old('vendor_idvendor') == $vendor->idvendor ? 'selected' : '' }}>
-                                        {{ $vendor->nama_vendor }}
+        <h3>Informasi Pengadaan</h3>
+
+        <div class="form-group">
+            <label for="vendor_idvendor">Vendor</label>
+            <select name="vendor_idvendor" id="vendor_idvendor" required>
+                <option value="">-- Pilih Vendor --</option>
+                @foreach($vendors as $vendor)
+                    <option value="{{ $vendor->idvendor }}"
+                        {{ old('vendor_idvendor') == $vendor->idvendor ? 'selected' : '' }}>
+                        {{ $vendor->nama_vendor }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Tanggal Pengadaan</label>
+            <input type="text" value="{{ date('d-m-Y') }}" readonly>
+        </div>
+
+        <hr>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3>Rincian Barang</h3>
+            <button type="button" class="btn" id="btn-tambah-baris">
+                + Tambah Barang
+            </button>
+        </div>
+
+        <div class="table-wrap">
+            <table id="tabel-detail">
+                <thead>
+                    <tr>
+                        <th>Barang</th>
+                        <th>Harga Satuan (Rp)</th>
+                        <th>Jumlah</th>
+                        <th>Subtotal (Rp)</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr class="item-row">
+                        <td>
+                            <select name="items[0][idbarang]" class="select-barang" required>
+                                <option value="">-- Pilih Barang --</option>
+                                @foreach($barangs as $barang)
+                                    <option value="{{ $barang->idbarang }}"
+                                        data-harga="{{ $barang->harga ?? 0 }}">
+                                        {{ $barang->nama }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('vendor_idvendor')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                        </td>
 
-                        <div class="form-group mb-3">
-                            <label class="form-label">Tanggal Pengadaan</label>
-                            <input type="text" class="form-control" value="{{ date('d F Y') }}" readonly>
-                        </div>
-                    </div>
-                </div>
+                        <td>
+                            <input type="number"
+                                name="items[0][harga_satuan]"
+                                class="input-harga"
+                                min="0" value="0" required>
+                        </td>
+
+                        <td>
+                            <input type="number"
+                                name="items[0][jumlah]"
+                                class="input-jumlah"
+                                min="1" value="1" required>
+                        </td>
+
+                        <td>
+                            <input type="text"
+                                class="input-subtotal"
+                                value="Rp 0" readonly>
+                        </td>
+
+                        <td>
+                            <button type="button"
+                                class="btn btn-secondary btn-hapus"
+                                onclick="hapusBaris(this)">
+                                Hapus
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="max-width:350px; margin:25px 0 25px auto;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                <strong>Subtotal Nilai:</strong>
+                <strong id="label-subtotal">Rp 0</strong>
             </div>
 
-            <!-- Detail Barang -->
-            <div class="col-md-8">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <span class="font-weight-bold">Rincian Barang</span>
-                        <button type="button" class="btn btn-primary btn-sm" id="btn-tambah-baris">+ Tambah Baris Barang</button>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover mb-0" id="tabel-detail">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 35%;">Barang</th>
-                                        <th style="width: 25%;">Harga Satuan (Rp)</th>
-                                        <th style="width: 15%;">Jumlah</th>
-                                        <th style="width: 20%;">Subtotal (Rp)</th>
-                                        <th style="width: 5%;">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="item-row">
-                                        <td>
-                                            <select name="items[0][idbarang]" class="form-select select-barang" required>
-                                                <option value="">-- Pilih Barang --</option>
-                                                @foreach($barangs as $barang)
-                                                    <option value="{{ $barang->idbarang }}" data-harga="{{ $barang->harga ?? 0 }}">
-                                                        {{ $barang->nama }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input type="number" name="items[0][harga_satuan]" class="form-control input-harga" min="0" value="0" required>
-                                        </td>
-                                        <td>
-                                            <input type="number" name="items[0][jumlah]" class="form-control input-jumlah" min="1" value="1" required>
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control input-subtotal text-end" value="0" readonly>
-                                        </td>
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-outline-danger btn-sm btn-hapus" onclick="hapusBaris(this)">×</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                <strong>PPN (11%):</strong>
+                <strong id="label-ppn">Rp 0</strong>
+            </div>
 
-                    <!-- Panel Rekapitulasi Pembayaran -->
-                    <div class="card-footer bg-white">
-                        <div class="row justify-content-end">
-                            <div class="col-md-6">
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted">Subtotal Nilai:</span>
-                                    <strong id="label-subtotal">Rp 0</strong>
-                                </div>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted">PPN (11%):</span>
-                                    <strong id="label-ppn">Rp 0</strong>
-                                </div>
-                                <hr class="my-2">
-                                <div class="d-flex justify-content-between">
-                                    <span class="h6 mb-0">Total Keseluruhan:</span>
-                                    <strong class="h6 mb-0 text-primary" id="label-total">Rp 0</strong>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <hr>
 
-                <div class="d-flex justify-content-end gap-2">
-                    <button type="submit" class="btn btn-success px-4">Simpan Pengadaan</button>
-                </div>
+            <div style="display:flex; justify-content:space-between;">
+                <strong>Total Pengadaan:</strong>
+                <strong id="label-total">Rp 0</strong>
             </div>
         </div>
+
+        <button type="submit" class="btn">
+            Simpan Pengadaan
+        </button>
+
+        <a href="{{ route('pengadaan.index') }}" class="btn btn-secondary">
+            Batal
+        </a>
     </form>
 </div>
 
 <script>
 let rowIndex = 1;
 
-// Opsi barang dalam bentuk template string
 const barangOptions = `
     <option value="">-- Pilih Barang --</option>
     @foreach($barangs as $barang)
-        <option value="{{ $barang->idbarang }}" data-harga="{{ $barang->harga ?? 0 }}">
+        <option value="{{ $barang->idbarang }}"
+            data-harga="{{ $barang->harga ?? 0 }}">
             {{ $barang->nama }}
         </option>
     @endforeach
 `;
 
-document.getElementById('btn-tambah-baris').addEventListener('click', function() {
+document.getElementById('btn-tambah-baris').addEventListener('click', function () {
     const tbody = document.querySelector('#tabel-detail tbody');
     const tr = document.createElement('tr');
+
     tr.className = 'item-row';
+
     tr.innerHTML = `
         <td>
-            <select name="items[${rowIndex}][idbarang]" class="form-select select-barang" required>
+            <select name="items[${rowIndex}][idbarang]" class="select-barang" required>
                 ${barangOptions}
             </select>
         </td>
         <td>
-            <input type="number" name="items[${rowIndex}][harga_satuan]" class="form-control input-harga" min="0" value="0" required>
+            <input type="number" name="items[${rowIndex}][harga_satuan]"
+                class="input-harga" min="0" value="0" required>
         </td>
         <td>
-            <input type="number" name="items[${rowIndex}][jumlah]" class="form-control input-jumlah" min="1" value="1" required>
+            <input type="number" name="items[${rowIndex}][jumlah]"
+                class="input-jumlah" min="1" value="1" required>
         </td>
         <td>
-            <input type="text" class="form-control input-subtotal text-end" value="0" readonly>
+            <input type="text" class="input-subtotal" value="Rp 0" readonly>
         </td>
-        <td class="text-center">
-            <button type="button" class="btn btn-outline-danger btn-sm btn-hapus" onclick="hapusBaris(this)">×</button>
+        <td>
+            <button type="button" class="btn btn-secondary"
+                onclick="hapusBaris(this)">Hapus</button>
         </td>
     `;
+
     tbody.appendChild(tr);
     rowIndex++;
 });
 
-function hapusBaris(btn) {
+function hapusBaris(button) {
     const rows = document.querySelectorAll('#tabel-detail tbody .item-row');
+
     if (rows.length > 1) {
-        btn.closest('tr').remove();
+        button.closest('tr').remove();
         hitungTotalSemua();
     } else {
-        alert('Minimal harus menyisakan 1 baris item.');
+        alert('Minimal harus ada satu barang.');
     }
 }
 
-// Event Delegation untuk mendeteksi perubahan input harga, jumlah, dan pilihan barang
-document.querySelector('#tabel-detail').addEventListener('input', function(e) {
-    if (e.target.classList.contains('input-harga') || e.target.classList.contains('input-jumlah')) {
+document.querySelector('#tabel-detail').addEventListener('input', function (e) {
+    if (e.target.classList.contains('input-harga') ||
+        e.target.classList.contains('input-jumlah')) {
         hitungBaris(e.target.closest('tr'));
     }
 });
 
-document.querySelector('#tabel-detail').addEventListener('change', function(e) {
+document.querySelector('#tabel-detail').addEventListener('change', function (e) {
     if (e.target.classList.contains('select-barang')) {
         const row = e.target.closest('tr');
-        const selectedOption = e.target.options[e.target.selectedIndex];
-        const defaultHarga = selectedOption.getAttribute('data-harga') || 0;
-        
-        row.querySelector('.input-harga').value = defaultHarga;
+        const option = e.target.options[e.target.selectedIndex];
+
+        row.querySelector('.input-harga').value =
+            option.getAttribute('data-harga') || 0;
+
         hitungBaris(row);
     }
 });
 
+function formatRupiah(angka) {
+    return 'Rp ' + new Intl.NumberFormat('id-ID').format(angka);
+}
+
 function hitungBaris(row) {
-    const harga = parseFloat(row.querySelector('.input-harga').value) || 0;
-    const jumlah = parseFloat(row.querySelector('.input-jumlah').value) || 0;
+    const harga = Number(row.querySelector('.input-harga').value) || 0;
+    const jumlah = Number(row.querySelector('.input-jumlah').value) || 0;
+
     const subtotal = harga * jumlah;
 
-    row.querySelector('.input-subtotal').value = new Intl.NumberFormat('id-ID').format(subtotal);
+    row.querySelector('.input-subtotal').value = formatRupiah(subtotal);
+
     hitungTotalSemua();
 }
 
 function hitungTotalSemua() {
-    let grandSubtotal = 0;
-    const rows = document.querySelectorAll('#tabel-detail tbody .item-row');
+    let subtotal = 0;
 
-    rows.forEach(row => {
-        const harga = parseFloat(row.querySelector('.input-harga').value) || 0;
-        const jumlah = parseFloat(row.querySelector('.input-jumlah').value) || 0;
-        grandSubtotal += (harga * jumlah);
+    document.querySelectorAll('#tabel-detail tbody .item-row').forEach(row => {
+        const harga = Number(row.querySelector('.input-harga').value) || 0;
+        const jumlah = Number(row.querySelector('.input-jumlah').value) || 0;
+
+        subtotal += harga * jumlah;
     });
 
-    const ppn = Math.round(grandSubtotal * 0.11);
-    const total = grandSubtotal + ppn;
+    const ppn = Math.round(subtotal * 0.11);
+    const total = subtotal + ppn;
 
-    document.getElementById('label-subtotal').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(grandSubtotal);
-    document.getElementById('label-ppn').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(ppn);
-    document.getElementById('label-total').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(total);
+    document.getElementById('label-subtotal').innerText = formatRupiah(subtotal);
+    document.getElementById('label-ppn').innerText = formatRupiah(ppn);
+    document.getElementById('label-total').innerText = formatRupiah(total);
 }
 </script>
 @endsection

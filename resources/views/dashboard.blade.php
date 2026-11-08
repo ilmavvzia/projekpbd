@@ -133,6 +133,7 @@ footer{margin-top:36px; color:var(--muted); font-size:13px; text-align:center}
     <a href="{{ route('vendor.index') }}" {!! $aktif('vendor*') !!}>Vendor</a>
     <a href="{{ route('pengadaan.index') }}" {!! $aktif('pengadaan*') !!}>Pengadaan</a>
     <a href="{{ route('penerimaan.index') }}" {!! $aktif('penerimaan*') !!}>Penerimaan</a>
+    <a href="{{ route('penjualan.index') }}" {!! $aktif('penjualan*') !!}>Penjualan</a>
     <a href="{{ route('margin_penjualan.index') }}" {!! $aktif('margin*') !!}>Margin Penjualan</a>
   </nav>
 </aside>
@@ -177,11 +178,26 @@ footer{margin-top:36px; color:var(--muted); font-size:13px; text-align:center}
     <div class="stat"><b>{{ $user->count() }}</b><span>Total User</span></div>
     <div class="stat"><b>{{ $vendor->count() }}</b><span>Total Vendor</span></div>
     <div class="stat"><b>{{ $margin->count() }}</b><span>Total Margin</span></div>
+
+    <div class="stat">
+    <b>{{ count($penjualan) }}</b>
+    <span>Total Transaksi Penjualan</span>
+</div>
+
+<div class="stat">
+    <b>
+        Rp {{ number_format(collect($penjualan)->sum('total_nilai'), 0, ',', '.') }}
+    </b>
+    <span>Total Omzet Penjualan</span>
+</div>
   </section>
 
   <section>
     <div class="toolbar">
       <div class="tabs" role="tablist" id="tabs">
+        <button type="button" role="tab" data-tab="penjualan" aria-selected="false">
+    Penjualan
+</button>
         <button type="button" role="tab" data-tab="barang" aria-selected="true">Barang</button>
         <button type="button" role="tab" data-tab="satuan" aria-selected="false">Satuan</button>
         <button type="button" role="tab" data-tab="role" aria-selected="false">Role</button>
@@ -317,6 +333,68 @@ footer{margin-top:36px; color:var(--muted); font-size:13px; text-align:center}
         </tbody>
       </table>
     </div>
+
+    
+{{-- Penjualan --}}
+<div class="table-wrap tab-panel" id="panel-penjualan" hidden>
+    <table>
+        <thead>
+            <tr>
+                <th>ID Penjualan</th>
+                <th>Tanggal</th>
+                <th>Kasir</th>
+                <th>Margin</th>
+                <th class="num">Subtotal</th>
+                <th class="num">PPN</th>
+                <th class="num">Total</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @forelse ($penjualan as $item)
+                <tr data-row>
+                    <td>#{{ $item->idpenjualan }}</td>
+
+                    <td>
+                        {{ \Carbon\Carbon::parse($item->created_at)->format('d-m-Y H:i') }}
+                    </td>
+
+                    <td>{{ $item->username ?? '-' }}</td>
+
+                    <td>{{ $item->persen ?? 0 }}%</td>
+
+                    <td class="num">
+                        Rp {{ number_format($item->subtotal_nilai, 0, ',', '.') }}
+                    </td>
+
+                    <td class="num">
+                        Rp {{ number_format($item->ppn, 0, ',', '.') }}
+                    </td>
+
+                    <td class="num">
+                        <strong>
+                            Rp {{ number_format($item->total_nilai, 0, ',', '.') }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        <a href="{{ route('penjualan.show', $item->idpenjualan) }}">
+                            Detail
+                        </a>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="8" class="empty">
+                        Belum ada transaksi penjualan.
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+
   </section>
 
   <footer>Dashboard Sistem Informasi Data Master</footer>
